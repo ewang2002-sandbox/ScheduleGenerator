@@ -3,7 +3,7 @@ import {Schedule} from "../src/schedule";
 describe("Testing the Schedule Class", () => {
     test("Different Time, Different Days", () => {
         const schedule = new Schedule();
-        schedule.addCourseToSchedule({
+        schedule.addSectionToSchedule({
             courseId: "TEST 01",
             section: "A",
             meetings: [
@@ -11,7 +11,7 @@ describe("Testing the Schedule Class", () => {
             ]
         });
 
-        schedule.addCourseToSchedule({
+        schedule.addSectionToSchedule({
             courseId: "TEST 02",
             section: "A",
             meetings: [
@@ -19,12 +19,12 @@ describe("Testing the Schedule Class", () => {
             ]
         });
 
-        expect(2).toBe(schedule.courses.length);
+        expect(2).toBe(schedule.sections.length);
     });
 
     test("Same Time, Different Days.", () => {
         const schedule = new Schedule();
-        schedule.addCourseToSchedule({
+        schedule.addSectionToSchedule({
             courseId: "TEST 01",
             section: "A",
             meetings: [
@@ -32,7 +32,7 @@ describe("Testing the Schedule Class", () => {
             ]
         });
 
-        schedule.addCourseToSchedule({
+        schedule.addSectionToSchedule({
             courseId: "TEST 02",
             section: "A",
             meetings: [
@@ -40,12 +40,12 @@ describe("Testing the Schedule Class", () => {
             ]
         });
 
-        expect(2).toBe(schedule.courses.length);
+        expect(2).toBe(schedule.sections.length);
     });
 
     test("Different Time, Same Day", () => {
         const schedule = new Schedule();
-        schedule.addCourseToSchedule({
+        schedule.addSectionToSchedule({
             courseId: "TEST 01",
             section: "A",
             meetings: [
@@ -53,7 +53,7 @@ describe("Testing the Schedule Class", () => {
             ]
         });
 
-        schedule.addCourseToSchedule({
+        schedule.addSectionToSchedule({
             courseId: "TEST 02",
             section: "A",
             meetings: [
@@ -61,12 +61,12 @@ describe("Testing the Schedule Class", () => {
             ]
         });
 
-        expect(2).toBe(schedule.courses.length);
+        expect(2).toBe(schedule.sections.length);
     });
 
     test("Same Time, Same Day", () => {
         const schedule = new Schedule();
-        schedule.addCourseToSchedule({
+        schedule.addSectionToSchedule({
             courseId: "TEST 01",
             section: "A",
             meetings: [
@@ -74,7 +74,7 @@ describe("Testing the Schedule Class", () => {
             ]
         });
 
-        schedule.addCourseToSchedule({
+        schedule.addSectionToSchedule({
             courseId: "TEST 02",
             section: "A",
             meetings: [
@@ -82,6 +82,6 @@ describe("Testing the Schedule Class", () => {
             ]
         });
 
-        expect(1).toBe(schedule.courses.length);
+        expect(1).toBe(schedule.sections.length);
     });
 });

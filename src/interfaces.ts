@@ -1,4 +1,4 @@
-export interface ICourse {
+export interface ISection {
     courseId: string;
     section: string;
     courseTitle?: string;

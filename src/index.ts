@@ -1,7 +1,7 @@
 import {generateAllSchedules} from "./schedule";
-import {ICourse} from "./interfaces";
+import {ISection} from "./interfaces";
 
-const courses: ICourse[] = [
+const courses: ISection[] = [
     {
         courseId: "CSE 100",
         section: "B01",
@@ -58,5 +58,5 @@ console.log(`Found ${schedules.length} Schedules in ${diff} Milliseconds.`);
 
 
 schedules.forEach(schedule => {
-    console.log(schedule.courses.map(x => `${x.courseId} (${x.section})`).join(", "));
+    console.log(schedule.sections.map(x => `${x.courseId} (${x.section})`).join(", "));
 });

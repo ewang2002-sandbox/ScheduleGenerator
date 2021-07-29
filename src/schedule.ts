@@ -1,58 +1,57 @@
+import {ISection} from "./interfaces";
+
 /**
  * Generates an array of possible schedules.
- * @param {ICourse[]} courses All courses. More accurately, this should be an array of all possible courses (i.e.
- * sections). The courses will then be organized.
+ * @param {ISection[]} sections All sections.
  * @returns {Schedule[]} The array of schedules.
- */ import {ICourse} from "./interfaces";
-
-export function generateAllSchedules(courses: ICourse[]): Schedule[] {
-    // Step 1: Separate out the courses.
-    const courseMap = new Map<string, ICourse[]>();
-    for (const course of courses) {
-        if (courseMap.has(course.courseId))
-            courseMap.get(course.courseId)!.push(course);
+ */
+export function generateAllSchedules(sections: ISection[]): Schedule[] {
+    // Step 1: Separate out the sections.
+    const courseMap = new Map<string, ISection[]>();
+    for (const section of sections) {
+        if (courseMap.has(section.courseId))
+            courseMap.get(section.courseId)!.push(section);
         else
-            courseMap.set(course.courseId, [course]);
+            courseMap.set(section.courseId, [section]);
     }
 
     if (courseMap.size === 0)
         return [];
 
-    // keys = The unique course IDs.
-    const keys = Array.from(courseMap.keys());
+    const allCourseIds = Array.from(courseMap.keys());
     // Step 2: Load the initial schedule by creating a new schedule with just one course ID.
-    const initialKey = keys.shift()!;
+    const initialCourseId = allCourseIds.shift()!;
     const possibleSchedules: Schedule[] = [];
-    courseMap.get(initialKey)!.forEach(course => {
+    courseMap.get(initialCourseId)!.forEach(course => {
         const s = new Schedule();
-        s.addCourseToSchedule(course);
+        s.addSectionToSchedule(course);
         possibleSchedules.push(s);
     });
 
     // Step 3: Go through all course IDs until none are left.
-    while (keys.length > 0) {
+    while (allCourseIds.length > 0) {
         // Step 3.1: Take one course ID out of the keys array.
-        const key = keys.shift()!;
-        const correspondingCourses = courseMap.get(key)!;
+        const courseId = allCourseIds.shift()!;
+        const correspondingSections = courseMap.get(courseId)!;
 
         // Step 3.2: Put all current schedules in a temporary array. This is because we can't add elements to an
         // array when we're iterating through it.
-        const temp: Schedule[] = [];
+        const tempScheduleArr: Schedule[] = [];
         while (possibleSchedules.length > 0) {
-            temp.push(possibleSchedules.shift()!);
+            tempScheduleArr.push(possibleSchedules.shift()!);
         }
 
         // Step 3.3: Go through all schedules in the array of temporary schedule.
-        while (temp.length > 0) {
+        while (tempScheduleArr.length > 0) {
             // 3.3.1: Essentially, for each schedule:
-            const tempSchedule = temp.shift()!;
-            // 3.3.2: Go through each course corresponding to the specific course ID found in step 3.1.
-            for (const c of correspondingCourses) {
+            const tempSchedule = tempScheduleArr.shift()!;
+            // 3.3.2: Go through each section corresponding to the specific course ID found in step 3.1.
+            for (const c of correspondingSections) {
                 // 3.3.3: Clone the schedule so we don't share references to the same course array in the Schedule
                 // object.
                 const clonedSchedule = tempSchedule.clone();
-                // 3.3.4: If we can add the course to the array, then save the schedule. Otherwise, drop it.
-                if (clonedSchedule.addCourseToSchedule(c)) {
+                // 3.3.4: If we can add the section to the array, then save the schedule. Otherwise, drop it.
+                if (clonedSchedule.addSectionToSchedule(c)) {
                     possibleSchedules.push(clonedSchedule);
                 }
             }
@@ -63,7 +62,7 @@ export function generateAllSchedules(courses: ICourse[]): Schedule[] {
 }
 
 export class Schedule {
-    private readonly _courses: ICourse[];
+    private readonly _sections: ISection[];
     private readonly _courseIds: string[];
     private readonly _times: [string, number, number][];
     private readonly _buffer: number;
@@ -73,34 +72,34 @@ export class Schedule {
      * @param {number} buffer The "buffer"; that is, the "break" between two sections.
      */
     public constructor(buffer: number = 10) {
-        this._courses = [];
+        this._sections = [];
         this._courseIds = [];
         this._times = [];
         this._buffer = buffer;
     }
 
-    public get courses(): ICourse[] {
-        return this._courses;
+    public get sections(): ISection[] {
+        return this._sections;
     }
 
     public clone(): Schedule {
         const s = new Schedule(this._buffer);
-        for (const course of this._courses)
-            s.addCourseToSchedule(course);
+        for (const course of this._sections)
+            s.addSectionToSchedule(course);
         return s;
     }
 
     /**
-     * Adds a course to the schedule.
-     * @param {ICourse} course The course.
-     * @returns {boolean} Whether the course was added.
+     * Adds a section to the schedule.
+     * @param {ISection} section The section.
+     * @returns {boolean} Whether the section was added.
      */
-    public addCourseToSchedule(course: ICourse): boolean {
-        if (this._courseIds.includes(course.courseId))
+    public addSectionToSchedule(section: ISection): boolean {
+        if (this._courseIds.includes(section.courseId))
             return false;
 
         const timesToAdd: [string, number, number][] = [];
-        for (const meeting of course.meetings) {
+        for (const meeting of section.meetings) {
             const thisStartTime = meeting.timeStart[0] * 100 + meeting.timeStart[1];
             const thisEndTime = meeting.timeEnd[0] * 100 + meeting.timeEnd[1];
 
@@ -126,8 +125,8 @@ export class Schedule {
         }
 
         this._times.push(...timesToAdd);
-        this._courses.push(course);
-        this._courseIds.push(course.courseId);
+        this._sections.push(section);
+        this._courseIds.push(section.courseId);
         return true;
     }
 }
