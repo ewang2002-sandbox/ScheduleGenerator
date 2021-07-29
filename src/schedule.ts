@@ -1,22 +1,63 @@
-import {ISection} from "./interfaces";
+import {IBasicConstraints, ISection} from "./interfaces";
 
 /**
  * Generates an array of possible schedules.
  * @param {ISection[]} sections All sections.
+ * @param {IBasicConstraints} [constraints] The constraints when generating these schedules.
  * @returns {Schedule[]} The array of schedules.
  */
-export function generateAllSchedules(sections: ISection[]): Schedule[] {
+export function generateAllSchedules(sections: ISection[], constraints?: IBasicConstraints): Schedule[] {
     // Step 1: Separate out the sections.
-    const courseMap = new Map<string, ISection[]>();
+    const tempMap = new Map<string, ISection[]>();
+    const seenCourses = new Set<string>();
     for (const section of sections) {
-        if (courseMap.has(section.courseId))
-            courseMap.get(section.courseId)!.push(section);
+        if (!seenCourses.has(section.courseId))
+            seenCourses.add(section.courseId);
+
+        if (constraints) {
+            // Check constraints
+            let isValid = true;
+            for (const meeting of section.meetings) {
+                // Day of the week will display as a 1 or 2 letter character.
+                if (constraints.reoccurringOnly && meeting.day.length > 2)
+                    continue;
+
+                const thisStartTime = meeting.timeStart[0] * 100 + meeting.timeStart[1];
+                const thisEndTime = meeting.timeEnd[0] * 100 + meeting.timeEnd[1];
+
+                const consStartTime = constraints.earliestStartTime[0] * 100 + constraints.earliestStartTime[1];
+                const consEndTime = constraints.latestEndTime[0] * 100 + constraints.latestEndTime[1];
+
+                if (thisStartTime < consStartTime || consEndTime < thisEndTime) {
+                    isValid = false;
+                    break;
+                }
+            }
+
+            if (!isValid)
+                continue;
+        }
+
+        if (tempMap.has(section.courseId))
+            tempMap.get(section.courseId)!.push(section);
         else
-            courseMap.set(section.courseId, [section]);
+            tempMap.set(section.courseId, [section]);
     }
 
-    if (courseMap.size === 0)
+    // No courses found or we didn't put all the courses in the map
+    if (tempMap.size === 0 || seenCourses.size !== tempMap.size)
         return [];
+
+    // Sort the key/value pairs so the key with the shortest values will always come first.
+    // This is because the algorithm will create a new (or cloned) Schedule object for each section. If it has to
+    // deal with courses with tons of sections first, it will negatively impact the performance of the remaining
+    // courses with little sections.
+    const entries = [...tempMap.entries()].sort((a, b) => {
+        if (a[1].length > b[1].length) return 1;
+        if (a[1].length < b[1].length) return -1;
+        return 0;
+    });
+    const courseMap = new Map<string, ISection[]>(entries);
 
     const allCourseIds = Array.from(courseMap.keys());
     // Step 2: Load the initial schedule by creating a new schedule with just one course ID.

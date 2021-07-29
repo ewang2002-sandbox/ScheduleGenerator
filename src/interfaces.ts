@@ -16,3 +16,9 @@ export interface IMeeting {
     building?: string;
     room?: string;
 }
+
+export interface IBasicConstraints {
+    earliestStartTime: [number, number];
+    latestEndTime: [number, number];
+    reoccurringOnly: boolean;
+}
