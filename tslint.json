@@ -1,0 +1,28 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended"
+  ],
+  "jsRules": {},
+  "rules": {
+    "no-namespace": {
+      "severity": "off"
+    },
+    "object-literal-shorthand": {
+      "severity": "off"
+    },
+    "no-console": {
+      "severity": "off"
+    },
+    "semicolon": {
+      "severity": "error"
+    },
+    "no-trailing-whitespace": {
+      "severity": "off"
+    },
+    "no-empty": {
+      "severity": "warning"
+    }
+  },
+  "rulesDirectory": []
+}

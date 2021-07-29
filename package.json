@@ -1,0 +1,20 @@
+{
+  "name": "schedule-generator",
+  "version": "0.0.1",
+  "description": "A program that can generate schedules based on given courses.",
+  "main": "index.js",
+  "scripts": {
+    "compile": "tsc -p .",
+    "start": "npm run compile && node out/index.js",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "Edward Wang",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^26.0.24",
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.4",
+    "typescript": "^4.3.5"
+  }
+}
